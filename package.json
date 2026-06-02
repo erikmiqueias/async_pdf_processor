@@ -17,6 +17,8 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.9.1",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^10.4.1",
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "globals": "^17.6.0",
@@ -30,7 +32,9 @@
     "@fastify/swagger": "^9.7.0",
     "@fastify/websocket": "^11.2.0",
     "@scalar/fastify-api-reference": "^1.57.5",
+    "drizzle-orm": "^0.45.2",
     "fastify": "^5.8.5",
-    "fastify-type-provider-zod": "^6.1.0"
+    "fastify-type-provider-zod": "^6.1.0",
+    "pg": "^8.21.0"
   }
 }
