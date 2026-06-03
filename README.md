@@ -1,8 +1,10 @@
 # 📄 Async PDF Processor & Smart Search Engine
 
-Um sistema distribuído de alta performance para processamento assíncrono de PDFs, extração de texto via OCR e busca semântica avançada.
+Um sistema de alta performance para processamento assíncrono de PDFs, extração de texto via OCR e busca semântica avançada.
 
 Construído com base nos princípios da **Clean Architecture**, este projeto resolve o desafio clássico de lidar com uploads e processamentos pesados de arquivos (I/O e CPU-bound) sem bloquear a API principal ou comprometer a memória do servidor.
+
+Fiz esse projeto justamente para dar um passo além dos CRUDs básicos e brincar com um ecossistema mais avançado usando ferramentas gratuitas. Mergulhei no RabbitMQ para entender o fluxo completo de mensageria (filas, jobs, workers, consumers). Também aproveitei para configurar Dead Letter Queues (DLQs) como rede de segurança contra falhas e usei o padrão Singleton no código. Foi o cenário perfeito para testar processamento assíncrono no mundo real.
 
 ## 🚀 Tecnologias e Stack
 
@@ -53,6 +55,7 @@ graph TD
 ### 1. Pré-requisitos
 
 - Node.js (25)
+- pnpm
 - Docker e Docker Compose
 - Uma chave gratuita da API do OCR.space.
 
