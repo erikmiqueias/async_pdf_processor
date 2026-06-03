@@ -34,10 +34,6 @@ export class RabbitQueueService implements QueueService {
       ).createChannel();
 
       await this.channel.assertQueue(this.queueName, { durable: true });
-
-      console.log(
-        `✅ [RabbitMQ] Conected and listening the queue: ${this.queueName}`,
-      );
     } catch (error) {
       console.error("❌ [RabbitMQ] Connection failed:", error);
       throw error;

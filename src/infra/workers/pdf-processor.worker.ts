@@ -1,4 +1,10 @@
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 import * as amqp from "amqplib";
+import { eq } from "drizzle-orm";
+
+import { s3Client } from "../../shared/lib/s3";
+import { db } from "../db/drizzle/lib/config";
+import { processedFilesTable } from "../db/drizzle/lib/schema";
 
 export class PdfProcessorWorker {
   private readonly queueName = "pdf_processing_queue";
@@ -13,35 +19,82 @@ export class PdfProcessorWorker {
       await channel.assertQueue(this.queueName, { durable: true });
       await channel.prefetch(1);
 
-      console.log("👷 [Worker]: Waiting jobs in the queue:", this.queueName);
-
       channel.consume(
         this.queueName,
         async (msg) => {
           if (!msg) return;
 
+          const payload = JSON.parse(msg.content.toString());
           try {
-            const payload = JSON.parse(msg.content.toString());
-            console.log(
-              "\n📥 [Worker]: Starting document OCR:",
-              payload.documentId,
+            const { Body } = await s3Client.send(
+              new GetObjectCommand({
+                Bucket: "uploads",
+                Key: payload.s3Key,
+              }),
             );
 
-            console.log(
-              "✅ [Worker]: OCR finished successfully",
-              payload.documentId,
+            const chunks = [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            for await (const chunk of Body as any) {
+              chunks.push(chunk);
+            }
+            const fileBuffer = Buffer.concat(chunks);
+
+            const base64Pdf = `data:application/pdf;base64,${fileBuffer.toString("base64")}`;
+
+            const formData = new FormData();
+            formData.append("base64Image", base64Pdf);
+            formData.append("language", "por");
+            formData.append("apikey", process.env.OCR_SPACE_API_KEY);
+            formData.append("OCREngine", "2");
+
+            const ocrResponse = await fetch(
+              `https://api.ocr.space/parse/image`,
+              {
+                method: "POST",
+                body: formData,
+              },
             );
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const ocrResult = (await ocrResponse.json()) as any;
+            if (ocrResult.isErroredOnProcessing) {
+              throw new Error("Error on OCR API", ocrResult.ErrorMessage);
+            }
+
+            const extractedText = ocrResult.ParsedResults?.map(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (page: any) => page.ParsedText,
+            );
+
+            if (typeof extractedText === "undefined") {
+              throw new Error("Error to extracted text", payload.documentId);
+            }
+
+            await db
+              .update(processedFilesTable)
+              .set({
+                status: "COMPLETED",
+                extractedText,
+              })
+              .where(eq(processedFilesTable.id, payload.documentId));
 
             channel.ack(msg);
           } catch (error) {
-            console.log("❌ [Worker]: Failed to file process:", error);
             channel.nack(msg, false, false);
+            await db
+              .update(processedFilesTable)
+              .set({
+                status: "FAILED",
+                errorMessage: String(error),
+              })
+              .where(eq(processedFilesTable.id, payload.documentId));
           }
         },
         { noAck: false },
       );
     } catch (error) {
-      console.error("🔥 [Worker]: Fatal error to the starting process:", error);
+      console.log(error);
       process.exit(1);
     }
   }

@@ -4,6 +4,7 @@ import z from "zod";
 
 import { selectFileSchema } from "../../../../infra/db/drizzle/lib/schema";
 import { DrizzlePdfProcessorRepository } from "../../repositories/drizzle-pdf-processor-repository";
+import { RabbitQueueService } from "../../services/queue-service.service";
 import { S3StorageService } from "../../services/s3.service";
 import { PdfProcessorUseCase } from "../../use-cases/pdf-processor.use-case";
 
@@ -41,9 +42,11 @@ export const pdfProcessorRoutes = (app: FastifyInstance) => {
 
       const s3StorageService = new S3StorageService();
       const pdfProcessorRepository = new DrizzlePdfProcessorRepository();
+      const rabbitQueueService = RabbitQueueService.getInstance();
       const pdfProcessorUseCase = new PdfProcessorUseCase(
         s3StorageService,
         pdfProcessorRepository,
+        rabbitQueueService,
       );
 
       try {

@@ -1,6 +1,7 @@
 import { bigint } from "drizzle-orm/pg-core";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
+import { text } from "drizzle-orm/pg-core";
 import { varchar } from "drizzle-orm/pg-core";
 import { pgTable, uuid } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
@@ -20,6 +21,7 @@ export const processedFilesTable = pgTable("processed_files", {
   sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
   status: statusEnum("status").default("PENDING").notNull(),
   errorMessage: varchar("error_message", { length: 255 }),
+  extractedText: text(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
