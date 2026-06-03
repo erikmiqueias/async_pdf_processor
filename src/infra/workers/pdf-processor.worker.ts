@@ -5,11 +5,14 @@ import { eq } from "drizzle-orm";
 import { s3Client } from "../../shared/lib/s3";
 import { db } from "../db/drizzle/lib/config";
 import { processedFilesTable } from "../db/drizzle/lib/schema";
+import { ElasticSearchService } from "../services/elasticsearch.service";
 
 export class PdfProcessorWorker {
   private readonly queueName = "pdf_processing_queue";
 
   public async start() {
+    const elasticSearch = ElasticSearchService.getInstance();
+    await elasticSearch.setupIndex();
     try {
       const amqpUrl = process.env.RABBITMQ_URL;
 
@@ -78,6 +81,11 @@ export class PdfProcessorWorker {
                 extractedText,
               })
               .where(eq(processedFilesTable.id, payload.documentId));
+
+            await elasticSearch.indexDocument(
+              payload.documentId,
+              extractedText,
+            );
 
             channel.ack(msg);
           } catch (error) {
