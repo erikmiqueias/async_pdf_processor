@@ -27,4 +27,5 @@ export const processedFilesTable = pgTable("processed_files", {
 });
 
 export type ProcessedFile = typeof processedFilesTable.$inferSelect;
-export type newProcessedFile = typeof processedFilesTable.$inferInsert;
+export type NewProcessedFile = typeof processedFilesTable.$inferInsert;
+export type PDFStatus = typeof statusEnum;

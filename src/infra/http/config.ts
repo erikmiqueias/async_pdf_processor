@@ -1,4 +1,5 @@
 import cors from "@fastify/cors";
+import fastifyMultipart from "@fastify/multipart";
 import fastifySwagger from "@fastify/swagger";
 import fastifyWebSocket from "@fastify/websocket";
 import fastifyApiReference from "@scalar/fastify-api-reference";
@@ -8,8 +9,9 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-export function setFastifyConfig(app: FastifyInstance) {
+export async function setFastifyConfig(app: FastifyInstance) {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
@@ -35,11 +37,20 @@ export function setFastifyConfig(app: FastifyInstance) {
     transform: jsonSchemaTransform,
   });
 
-  app.register(fastifyApiReference, {
+  await app.register(fastifyApiReference, {
     routePrefix: "/docs",
     openApiDocumentEndpoints: {
       json: "/docs.json",
       yaml: "/docs.yaml",
     },
   });
+
+  await app.register(fastifyMultipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10 MB
+      files: 1,
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>();
 }
