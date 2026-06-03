@@ -64,7 +64,5 @@ export class RabbitQueueService implements QueueService {
     this.channel.sendToQueue(this.queueName, messageBuffer, {
       persistent: true,
     });
-
-    console.log(`[RabbitMQ] Job publisher succesfully: ${payload.documentId}`);
   }
 }

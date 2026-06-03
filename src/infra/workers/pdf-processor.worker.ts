@@ -15,7 +15,6 @@ export class PdfProcessorWorker {
     await elasticSearch.setupIndex();
     try {
       const amqpUrl = process.env.RABBITMQ_URL;
-
       const connection = await amqp.connect(amqpUrl!);
       const channel = await connection.createChannel();
 
@@ -37,6 +36,7 @@ export class PdfProcessorWorker {
           if (!msg) return;
 
           const payload = JSON.parse(msg.content.toString());
+
           try {
             const { Body } = await s3Client.send(
               new GetObjectCommand({
@@ -74,14 +74,16 @@ export class PdfProcessorWorker {
               throw new Error("Error on OCR API", ocrResult.ErrorMessage);
             }
 
-            const extractedText = ocrResult.ParsedResults?.map(
+            const extractedTextArray = ocrResult.ParsedResults?.map(
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (page: any) => page.ParsedText,
             );
 
-            if (typeof extractedText === "undefined") {
+            if (typeof extractedTextArray === "undefined") {
               throw new Error("Error to extracted text", payload.documentId);
             }
+
+            const extractedText = extractedTextArray.join("\n\n");
 
             await db
               .update(processedFilesTable)

@@ -6,9 +6,7 @@ import { setFastifyConfig } from "./config";
 import { pdfRoutes } from "./routes";
 
 const buildApp = async () => {
-  const app = fastify({
-    logger: true,
-  });
+  const app = fastify();
   await setFastifyConfig(app);
   pdfRoutes(app);
 
@@ -19,7 +17,8 @@ export const startServer = async () => {
   const app = await buildApp();
   const port = process.env.PORT || 3000;
 
-  app.listen({ port: Number(port) }, (err) => {
+  app.listen({ port: Number(port) }, (err, address) => {
+    console.log("Servidor inicializado:", address);
     if (err) {
       app.log.error(err);
       process.exit(1);
