@@ -19,7 +19,16 @@ export class PdfProcessorWorker {
       const connection = await amqp.connect(amqpUrl!);
       const channel = await connection.createChannel();
 
-      await channel.assertQueue(this.queueName, { durable: true });
+      const dlxName = "pdf_processing_dlx";
+      const routingKeyFail = "pdf_processing_fail";
+
+      await channel.assertQueue(this.queueName, {
+        durable: true,
+        arguments: {
+          "x-dead-letter-exchange": dlxName,
+          "x-dead-letter-routing-key": routingKeyFail,
+        },
+      });
       await channel.prefetch(1);
 
       channel.consume(

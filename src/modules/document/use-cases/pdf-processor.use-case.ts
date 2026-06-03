@@ -1,7 +1,7 @@
 import { Readable } from "stream";
 
 import { PdfProcessorRepository } from "../repositories/pdf-processor-repository.interface";
-import { QueueService } from "../services/queue-service.interface";
+import { QueueService } from "../../../infra/services/queue-service.interface";
 import { S3StorageService } from "../services/s3.service";
 
 export class PdfProcessorUseCase {

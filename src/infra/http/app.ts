@@ -1,6 +1,6 @@
 import fastify from "fastify";
 
-import { RabbitQueueService } from "../../modules/document/services/queue-service.service";
+import { RabbitQueueService } from "../services/queue-service.service";
 import { PdfProcessorWorker } from "../workers/pdf-processor.worker";
 import { setFastifyConfig } from "./config";
 import { pdfRoutes } from "./routes";

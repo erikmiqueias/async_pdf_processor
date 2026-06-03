@@ -33,7 +33,21 @@ export class RabbitQueueService implements QueueService {
         this.connection as unknown as ChannelModel
       ).createChannel();
 
-      await this.channel.assertQueue(this.queueName, { durable: true });
+      const dlxName = "pdf_processing_dlx";
+      const dlqName = "pdf_processing_dlq";
+      const routingKeyFail = "pdf_processing_fail";
+
+      await this.channel.assertExchange(dlxName, "direct", { durable: true });
+      await this.channel.assertQueue(dlqName, { durable: true });
+      await this.channel.bindQueue(dlqName, dlxName, routingKeyFail);
+
+      await this.channel.assertQueue(this.queueName, {
+        durable: true,
+        arguments: {
+          "x-dead-letter-exchange": dlxName,
+          "x-dead-letter-routing-key": routingKeyFail,
+        },
+      });
     } catch (error) {
       console.error("❌ [RabbitMQ] Connection failed:", error);
       throw error;

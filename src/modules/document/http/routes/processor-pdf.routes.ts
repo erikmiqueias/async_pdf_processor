@@ -4,7 +4,7 @@ import z from "zod";
 
 import { selectFileSchema } from "../../../../infra/db/drizzle/lib/schema";
 import { DrizzlePdfProcessorRepository } from "../../repositories/drizzle-pdf-processor-repository";
-import { RabbitQueueService } from "../../services/queue-service.service";
+import { RabbitQueueService } from "../../../../infra/services/queue-service.service";
 import { S3StorageService } from "../../services/s3.service";
 import { PdfProcessorUseCase } from "../../use-cases/pdf-processor.use-case";
 
