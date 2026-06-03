@@ -1,5 +1,6 @@
 import fastify from "fastify";
 
+import { RabbitQueueService } from "../../modules/document/services/queue-service.service";
 import { setFastifyConfig } from "./config";
 import { pdfRoutes } from "./routes";
 
@@ -26,3 +27,4 @@ export const startServer = async () => {
 };
 
 startServer();
+RabbitQueueService.getInstance().connect();

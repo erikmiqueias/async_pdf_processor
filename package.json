@@ -16,6 +16,7 @@
   "packageManager": "pnpm@11.5.0+sha512.dbfcc4f81cf48597afd4bc391ffdf12c11f1a9fb83a395bfa6b0a2d9cc2fd8ffebafdb1ccbd529632153f793904c2615b7f09fe1a345473fd1c35845172a8eb1",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/amqplib": "^0.10.8",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
@@ -36,6 +37,7 @@
     "@fastify/swagger": "^9.7.0",
     "@fastify/websocket": "^11.2.0",
     "@scalar/fastify-api-reference": "^1.57.5",
+    "amqplib": "^2.0.1",
     "drizzle-orm": "^0.45.2",
     "drizzle-zod": "^0.8.3",
     "fastify": "^5.8.5",
