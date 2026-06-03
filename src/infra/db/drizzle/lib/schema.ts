@@ -3,6 +3,8 @@ import { pgEnum } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import { varchar } from "drizzle-orm/pg-core";
 import { pgTable, uuid } from "drizzle-orm/pg-core";
+import { createSelectSchema } from "drizzle-zod";
+import z from "zod";
 
 export const statusEnum = pgEnum("processed_file_status", [
   "PENDING",
@@ -26,6 +28,9 @@ export const processedFilesTable = pgTable("processed_files", {
     .notNull(),
 });
 
-export type ProcessedFile = typeof processedFilesTable.$inferSelect;
-export type NewProcessedFile = typeof processedFilesTable.$inferInsert;
+export const selectFileSchema = createSelectSchema(processedFilesTable);
+export const insertFileSchema = createSelectSchema(processedFilesTable);
+
+export type ProcessedFile = z.infer<typeof selectFileSchema>;
+export type NewProcessedFile = z.infer<typeof insertFileSchema>;
 export type PDFStatus = typeof statusEnum;

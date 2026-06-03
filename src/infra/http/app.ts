@@ -1,12 +1,14 @@
 import fastify from "fastify";
 
 import { setFastifyConfig } from "./config";
+import { pdfRoutes } from "./routes";
 
 const buildApp = async () => {
   const app = fastify({
     logger: true,
   });
   await setFastifyConfig(app);
+  pdfRoutes(app);
 
   return app;
 };

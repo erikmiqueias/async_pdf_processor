@@ -37,8 +37,10 @@
     "@fastify/websocket": "^11.2.0",
     "@scalar/fastify-api-reference": "^1.57.5",
     "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
     "fastify": "^5.8.5",
     "fastify-type-provider-zod": "^6.1.0",
-    "pg": "^8.21.0"
+    "pg": "^8.21.0",
+    "zod": "^4.4.3"
   }
 }
